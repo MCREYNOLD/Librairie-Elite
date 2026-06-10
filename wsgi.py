@@ -1,12 +1,11 @@
 import sys
 import os
 
-project_dir = os.path.dirname(os.path.abspath(file))
-if project_dir not in sys.path:
-    sys.path.insert(0, project_dir)
+project_dir = os.path.dirname(os.path.abspath(os.getcwd()))
+sys.path.insert(0, '/opt/render/project/src')
 
 from dotenv import load_dotenv
-load_dotenv(os.path.join(project_dir, '.env'))
+load_dotenv()
 
 from app import create_app
 application = create_app('production')
