@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Accès refusé — Librairie Élite{% endblock %}
+{% block content %}
+<div class="page-container center-content">
+  <div class="error-box">
+    <div class="error-code">403</div>
+    <h1>Accès refusé</h1>
+    <p>Vous n'avez pas les permissions nécessaires.</p>
+    <a href="{{ url_for('main.index') }}" class="btn-primary">Retour à l'accueil</a>
+  </div>
+</div>
+{% endblock %}

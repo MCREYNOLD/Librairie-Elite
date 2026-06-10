@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Catégories — Admin{% endblock %}
+{% block content %}
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-brand">⚙️ Admin</div>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin.dashboard') }}" class="admin-nav-link">📊 Dashboard</a>
+      <a href="{{ url_for('admin.books') }}" class="admin-nav-link">📚 Livres</a>
+      <a href="{{ url_for('admin.categories') }}" class="admin-nav-link active">🏷️ Catégories</a>
+      <a href="{{ url_for('admin.users') }}" class="admin-nav-link">👥 Utilisateurs</a>
+      <a href="{{ url_for('admin.orders') }}" class="admin-nav-link">📦 Commandes</a>
+      <a href="{{ url_for('main.index') }}" class="admin-nav-link">← Site</a>
+    </nav>
+  </aside>
+  <div class="admin-main">
+    <h1 class="admin-title">Catégories</h1>
+    <div class="admin-card form-card" style="max-width:480px">
+      <h2>Ajouter une catégorie</h2>
+      <form method="post" class="auth-form">
+        <div class="form-row-2">
+          <div class="form-group"><label>Nom</label><input type="text" name="nom" required placeholder="Roman"/></div>
+          <div class="form-group"><label>Icône</label><input type="text" name="icone" value="📚" maxlength="4"/></div>
+        </div>
+        <button type="submit" class="btn-primary">Ajouter</button>
+      </form>
+    </div>
+    <div class="admin-card">
+      <table class="admin-table">
+        <thead><tr><th>Icône</th><th>Nom</th><th>Slug</th><th>Livres</th></tr></thead>
+        <tbody>
+        {% for cat in categories %}
+        <tr><td>{{ cat.icone }}</td><td>{{ cat.nom }}</td><td><code>{{ cat.slug }}</code></td><td>{{ cat.books.count() }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

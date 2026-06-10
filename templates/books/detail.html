@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}{{ book.titre }} — Librairie Élite{% endblock %}
+{% block content %}
+<div class="page-container">
+  <div class="book-detail-layout">
+    <!-- Couverture -->
+    <div class="detail-cover">
+      {% if book.couverture and book.couverture != 'default_cover.jpg' %}
+        <img src="{{ url_for('static', filename='uploads/covers/' + book.couverture) }}" alt="{{ book.titre }}"/>
+      {% else %}
+        <div class="detail-cover-placeholder" style="background:{{ book.couleur }}">{{ book.titre }}</div>
+      {% endif %}
+      {% if book.badge %}<span class="book-badge large">{{ book.badge }}</span>{% endif %}
+    </div>
+
+    <!-- Infos -->
+    <div class="detail-info">
+      <div class="detail-category">{{ book.category.icone }} {{ book.category.nom }}</div>
+      <h1 class="detail-title">{{ book.titre }}</h1>
+      <div class="detail-author">par <strong>{{ book.auteur }}</strong></div>
+
+      {% if book.note_moyenne > 0 %}
+      <div class="detail-rating">
+        <span class="stars">{% for i in range(5) %}{{ '★' if i < book.note_moyenne|int else '☆' }}{% endfor %}</span>
+        <span>{{ "%.1f"|format(book.note_moyenne) }} ({{ book.nb_avis }} avis)</span>
+      </div>
+      {% endif %}
+
+      <div class="detail-price">{{ "%.2f"|format(book.prix|float) }} €</div>
+
+      {% set status = book.stock_status %}
+      <div class="stock-info stock-{{ status[0] }}">{{ status[1] }}</div>
+
+      {% if book.en_stock %}
+      <form action="{{ url_for('cart.add', book_id=book.id) }}" method="post" class="detail-cart-form">
+        <div class="qty-group">
+          <label>Quantité</label>
+          <input type="number" name="qty" value="1" min="1" max="{{ book.stock }}" class="qty-input"/>
+        </div>
+        <button type="submit" class="btn-primary btn-lg">+ Ajouter au panier</button>
+      </form>
+      {% else %}
+        <button disabled class="btn-disabled btn-lg">Épuisé</button>
+      {% endif %}
+
+      <div class="detail-meta">
+        {% if book.editeur %}<div><span>Éditeur</span><strong>{{ book.editeur }}</strong></div>{% endif %}
+        {% if book.annee %}<div><span>Année</span><strong>{{ book.annee }}</strong></div>{% endif %}
+        {% if book.pages %}<div><span>Pages</span><strong>{{ book.pages }}</strong></div>{% endif %}
+        {% if book.langue %}<div><span>Langue</span><strong>{{ book.langue }}</strong></div>{% endif %}
+        {% if book.isbn %}<div><span>ISBN</span><strong>{{ book.isbn }}</strong></div>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% if book.description %}
+  <div class="detail-description">
+    <h2>Description</h2>
+    <p>{{ book.description }}</p>
+  </div>
+  {% endif %}
+
+  <!-- Avis -->
+  <div class="reviews-section">
+    <h2>Avis des lecteurs ({{ book.nb_avis }})</h2>
+    {% if current_user.is_authenticated %}
+    <div class="review-form-card">
+      <h3>{{ 'Modifier votre avis' if user_review else 'Laisser un avis' }}</h3>
+      <form action="{{ url_for('books.add_review', book_id=book.id) }}" method="post">
+        <div class="star-picker" id="starPicker">
+          {% for i in range(1,6) %}
+            <input type="radio" name="note" id="star{{ i }}" value="{{ i }}" {{ 'checked' if user_review and user_review.note == i }}/>
+            <label for="star{{ i }}">★</label>
+          {% endfor %}
+        </div>
+        <textarea name="commentaire" placeholder="Votre commentaire…" rows="3">{{ user_review.commentaire if user_review }}</textarea>
+        <button type="submit" class="btn-primary">Publier</button>
+      </form>
+    </div>
+    {% endif %}
+    <div class="reviews-list">
+      {% for review in book.reviews.order_by_desc() if false %}{% endfor %}
+      {% for review in book.reviews %}
+      <div class="review-card">
+        <div class="review-header">
+          <strong>{{ review.user.full_name }}</strong>
+          <span class="review-stars">{% for i in range(review.note) %}★{% endfor %}</span>
+          <span class="review-date">{{ review.created_at.strftime('%d/%m/%Y') }}</span>
+        </div>
+        {% if review.commentaire %}<p>{{ review.commentaire }}</p>{% endif %}
+      </div>
+      {% else %}
+        <p class="no-reviews">Aucun avis pour l'instant. Soyez le premier !</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Livres similaires -->
+  {% if related %}
+  <div class="related-section">
+    <h2>Livres similaires</h2>
+    <div class="books-grid">
+      {% for book in related %}{% include 'books/_card.html' %}{% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

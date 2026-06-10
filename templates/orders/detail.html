@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Commande {{ order.reference }} — Librairie Élite{% endblock %}
+{% block content %}
+<div class="page-container">
+  <h1 class="page-title">Commande {{ order.reference }}</h1>
+  <div class="order-detail-grid">
+    <div class="order-items-card">
+      <h2>Articles</h2>
+      {% for item in order.items %}
+      <div class="order-item-row">
+        <div class="order-cover" style="background:{{ item.book.couleur }}"></div>
+        <div class="order-item-info">
+          <strong>{{ item.book.titre }}</strong>
+          <span>{{ item.book.auteur }}</span>
+        </div>
+        <div>× {{ item.quantite }}</div>
+        <div>{{ "%.2f"|format(item.sous_total) }} €</div>
+      </div>
+      {% endfor %}
+      <div class="order-total-row">Total : <strong>{{ "%.2f"|format(order.total|float) }} €</strong></div>
+    </div>
+    <div class="order-meta-card">
+      <h2>Informations</h2>
+      <div class="meta-row"><span>Statut</span><span class="status-{{ order.statut }}">{{ order.statut|replace('_',' ')|title }}</span></div>
+      <div class="meta-row"><span>Date</span><span>{{ order.created_at.strftime('%d/%m/%Y %H:%M') }}</span></div>
+      <div class="meta-row"><span>Livraison</span><span>{{ order.adresse }}, {{ order.ville }} {{ order.code_postal }}, {{ order.pays }}</span></div>
+    </div>
+  </div>
+  <a href="{{ url_for('orders.my_orders') }}" class="btn-secondary">← Mes commandes</a>
+</div>
+{% endblock %}

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Librairie Élite{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}"/>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="{{ url_for('main.index') }}" class="nav-logo">Librairie<span>Élite</span></a>
+
+    <form class="nav-search" action="{{ url_for('books.catalogue') }}" method="get">
+      <input type="text" name="q" placeholder="Titre, auteur, ISBN…" value="{{ request.args.get('q','') }}"/>
+      <button type="submit">🔍</button>
+    </form>
+
+    <div class="nav-links">
+      <a href="{{ url_for('books.catalogue') }}" class="nav-link">Catalogue</a>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('orders.my_orders') }}" class="nav-link">Mes commandes</a>
+        <a href="{{ url_for('auth.profile') }}" class="nav-link">{{ current_user.prenom }}</a>
+        {% if current_user.is_admin() %}
+          <a href="{{ url_for('admin.dashboard') }}" class="nav-link admin-link">⚙️ Admin</a>
+        {% endif %}
+        <a href="{{ url_for('auth.logout') }}" class="nav-link">Déconnexion</a>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}" class="nav-link">Connexion</a>
+        <a href="{{ url_for('auth.register') }}" class="btn-nav">S'inscrire</a>
+      {% endif %}
+    </div>
+
+    <a href="{{ url_for('cart.view') }}" class="cart-icon">
+      🛒
+      {% set cart = session.get('cart', {}) %}
+      {% set count = namespace(n=0) %}
+      {% for v in cart.values() %}{% set count.n = count.n + v.qty %}{% endfor %}
+      {% if count.n > 0 %}<span class="cart-badge">{{ count.n }}</span>{% endif %}
+    </a>
+  </div>
+</nav>
+
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="flash-container">
+    {% for cat, msg in messages %}
+    <div class="flash flash-{{ cat }}">
+      {{ msg }}
+      <button class="flash-close" onclick="this.parentElement.remove()">✕</button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+{% endwith %}
+
+<!-- MAIN CONTENT -->
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">Librairie<span>Élite</span></div>
+      <p>Des livres pour chaque passion, chaque instant.</p>
+    </div>
+    <div class="footer-links">
+      <h4>Catalogue</h4>
+      {% for cat in categories %}
+        <a href="{{ url_for('books.catalogue', categorie=cat.slug) }}">{{ cat.icone }} {{ cat.nom }}</a>
+      {% endfor %}
+    </div>
+    <div class="footer-links">
+      <h4>Mon compte</h4>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('auth.profile') }}">Mon profil</a>
+        <a href="{{ url_for('orders.my_orders') }}">Mes commandes</a>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}">Connexion</a>
+        <a href="{{ url_for('auth.register') }}">Créer un compte</a>
+      {% endif %}
+    </div>
+    <div class="footer-links">
+      <h4>Informations</h4>
+      <a href="{{ url_for('main.about') }}">À propos</a>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2025 Librairie Élite — Tous droits réservés</div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

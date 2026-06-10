@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Commandes — Admin{% endblock %}
+{% block content %}
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-brand">⚙️ Admin</div>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin.dashboard') }}" class="admin-nav-link">📊 Dashboard</a>
+      <a href="{{ url_for('admin.books') }}" class="admin-nav-link">📚 Livres</a>
+      <a href="{{ url_for('admin.categories') }}" class="admin-nav-link">🏷️ Catégories</a>
+      <a href="{{ url_for('admin.users') }}" class="admin-nav-link">👥 Utilisateurs</a>
+      <a href="{{ url_for('admin.orders') }}" class="admin-nav-link active">📦 Commandes</a>
+      <a href="{{ url_for('main.index') }}" class="admin-nav-link">← Site</a>
+    </nav>
+  </aside>
+  <div class="admin-main">
+    <h1 class="admin-title">Commandes</h1>
+    <div class="admin-card">
+      <table class="admin-table">
+        <thead><tr><th>Référence</th><th>Client</th><th>Total</th><th>Statut</th><th>Date</th><th>Changer statut</th></tr></thead>
+        <tbody>
+        {% for order in orders.items %}
+        <tr>
+          <td><strong>{{ order.reference }}</strong></td>
+          <td>{{ order.user.full_name }}</td>
+          <td>{{ "%.2f"|format(order.total|float) }} €</td>
+          <td><span class="status-badge status-{{ order.statut }}">{{ order.statut|replace('_',' ')|title }}</span></td>
+          <td>{{ order.created_at.strftime('%d/%m/%Y') }}</td>
+          <td>
+            <form action="{{ url_for('admin.order_status', order_id=order.id) }}" method="post" style="display:flex;gap:.4rem">
+              <select name="statut" class="sort-select" style="font-size:.78rem;padding:.3rem .5rem">
+                {% for s in ['en_attente','payee','expediee','livree','annulee'] %}
+                  <option value="{{ s }}" {{ 'selected' if order.statut==s }}>{{ s|replace('_',' ')|title }}</option>
+                {% endfor %}
+              </select>
+              <button type="submit" class="btn-sm">OK</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Paiement — Librairie Élite{% endblock %}
+{% block content %}
+<div class="page-container">
+  <h1 class="page-title">Finaliser la commande</h1>
+  <div class="checkout-layout">
+    <div class="checkout-form-card">
+      <form method="post">
+        <div class="form-section">
+          <h3>📦 Adresse de livraison</h3>
+          <div class="form-group"><label>Adresse</label><input type="text" name="adresse" required placeholder="12 rue de la Paix"/></div>
+          <div class="form-row-2">
+            <div class="form-group"><label>Ville</label><input type="text" name="ville" required placeholder="Paris"/></div>
+            <div class="form-group"><label>Code postal</label><input type="text" name="code_postal" required placeholder="75001"/></div>
+          </div>
+          <div class="form-group">
+            <label>Pays</label>
+            <select name="pays" required>
+              <option>France</option><option>Belgique</option><option>Suisse</option>
+              <option>Canada</option><option>Maroc</option><option>Sénégal</option>
+              <option>Côte d'Ivoire</option><option>Cameroun</option><option>RD Congo</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-section">
+          <h3>💳 Paiement <span class="demo-badge">Mode démo</span></h3>
+          <p class="demo-note">En production, intégrer Stripe ou PayDunya ici.</p>
+          <div class="form-group"><label>Numéro de carte</label><input type="text" placeholder="4242 4242 4242 4242" oninput="fmtCard(this)"/></div>
+          <div class="form-row-2">
+            <div class="form-group"><label>Expiration</label><input type="text" placeholder="MM/AA" maxlength="5" oninput="fmtExp(this)"/></div>
+            <div class="form-group"><label>CVV</label><input type="text" placeholder="123" maxlength="3"/></div>
+          </div>
+        </div>
+        <button type="submit" class="btn-checkout">🔒 Confirmer la commande — {{ "%.2f"|format(total) }} €</button>
+      </form>
+    </div>
+    <div class="order-recap-card">
+      <h3>Votre commande</h3>
+      {% for item in items %}
+      <div class="recap-item">
+        <div class="recap-cover" style="background:{{ item.book.couleur }}"></div>
+        <div class="recap-item-info">
+          <div class="recap-title">{{ item.book.titre }}</div>
+          <div class="recap-qty">× {{ item.qty }}</div>
+        </div>
+        <div class="recap-price">{{ "%.2f"|format(item.sous_total) }} €</div>
+      </div>
+      {% endfor %}
+      <div class="summary-row"><span>Sous-total</span><span>{{ "%.2f"|format(subtotal) }} €</span></div>
+      <div class="summary-row"><span>TVA 20%</span><span>{{ "%.2f"|format(subtotal * 0.2) }} €</span></div>
+      <div class="summary-row total"><span>Total</span><span>{{ "%.2f"|format(total) }} €</span></div>
+    </div>
+  </div>
+</div>
+{% block extra_js %}
+<script>
+function fmtCard(el){let v=el.value.replace(/\D/g,'').substring(0,16);el.value=v.match(/.{1,4}/g)?.join(' ')||v;}
+function fmtExp(el){let v=el.value.replace(/\D/g,'').substring(0,4);if(v.length>=2)v=v.slice(0,2)+'/'+v.slice(2);el.value=v;}
+</script>
+{% endblock %}
+{% endblock %}

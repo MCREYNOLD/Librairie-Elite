@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Mes commandes — Librairie Élite{% endblock %}
+{% block content %}
+<div class="page-container">
+  <h1 class="page-title">Mes commandes</h1>
+  {% if orders %}
+  <div class="orders-list">
+    {% for order in orders %}
+    <div class="order-row">
+      <div class="order-ref"><strong>{{ order.reference }}</strong></div>
+      <div class="order-date">{{ order.created_at.strftime('%d/%m/%Y') }}</div>
+      <div class="order-items-count">{{ order.items|length }} article{{ 's' if order.items|length != 1 }}</div>
+      <div class="order-total">{{ "%.2f"|format(order.total|float) }} €</div>
+      <div class="order-status status-{{ order.statut }}">{{ order.statut|replace('_',' ')|title }}</div>
+      <a href="{{ url_for('orders.detail', order_id=order.id) }}" class="btn-sm">Détails</a>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📦</div>
+    <h3>Aucune commande</h3>
+    <a href="{{ url_for('books.catalogue') }}" class="btn-primary">Commencer mes achats</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

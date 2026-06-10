@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Commande confirmée — Librairie Élite{% endblock %}
+{% block content %}
+<div class="page-container center-content">
+  <div class="confirm-box">
+    <div class="confirm-icon">🎉</div>
+    <h1>Commande confirmée !</h1>
+    <p>Merci <strong>{{ current_user.full_name }}</strong> pour votre achat.</p>
+    <div class="confirm-ref">Référence : <strong>{{ order.reference }}</strong></div>
+    <div class="confirm-items">
+      {% for item in order.items %}
+        <div class="confirm-item">
+          <span>{{ item.book.titre }} × {{ item.quantite }}</span>
+          <span>{{ "%.2f"|format(item.sous_total) }} €</span>
+        </div>
+      {% endfor %}
+      <div class="confirm-total">Total payé : <strong>{{ "%.2f"|format(order.total|float) }} €</strong></div>
+    </div>
+    <p class="confirm-note">Un email de confirmation vous a été envoyé. Livraison en 24–48h.</p>
+    <a href="{{ url_for('main.index') }}" class="btn-primary">Retour à l'accueil</a>
+    <a href="{{ url_for('orders.my_orders') }}" class="btn-secondary">Mes commandes</a>
+  </div>
+</div>
+{% endblock %}

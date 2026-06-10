@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Livres — Admin{% endblock %}
+{% block content %}
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-brand">⚙️ Admin</div>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin.dashboard') }}" class="admin-nav-link">📊 Dashboard</a>
+      <a href="{{ url_for('admin.books') }}" class="admin-nav-link active">📚 Livres</a>
+      <a href="{{ url_for('admin.categories') }}" class="admin-nav-link">🏷️ Catégories</a>
+      <a href="{{ url_for('admin.users') }}" class="admin-nav-link">👥 Utilisateurs</a>
+      <a href="{{ url_for('admin.orders') }}" class="admin-nav-link">📦 Commandes</a>
+      <a href="{{ url_for('main.index') }}" class="admin-nav-link">← Site</a>
+    </nav>
+  </aside>
+  <div class="admin-main">
+    <div class="admin-bar"><h1 class="admin-title">Livres</h1><a href="{{ url_for('admin.book_new') }}" class="btn-primary">+ Nouveau livre</a></div>
+    <div class="admin-card">
+      <table class="admin-table">
+        <thead><tr><th>Couv.</th><th>Titre</th><th>Auteur</th><th>Catégorie</th><th>Prix</th><th>Stock</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for book in books.items %}
+        <tr>
+          <td><div style="width:32px;height:46px;background:{{ book.couleur }};border-radius:3px 5px 5px 3px"></div></td>
+          <td><strong>{{ book.titre }}</strong></td>
+          <td>{{ book.auteur }}</td>
+          <td>{{ book.category.nom }}</td>
+          <td>{{ "%.2f"|format(book.prix|float) }} €</td>
+          <td><span class="stock-tag {{ 'stock-out' if book.stock==0 else 'stock-low' if book.stock<=5 else 'stock-ok' }}">{{ book.stock }}</span></td>
+          <td class="td-actions">
+            <a href="{{ url_for('admin.book_edit', book_id=book.id) }}" class="btn-sm">✏️</a>
+            <form action="{{ url_for('admin.book_delete', book_id=book.id) }}" method="post" style="display:inline" onsubmit="return confirm('Supprimer ce livre ?')">
+              <button type="submit" class="btn-sm danger">🗑</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% if books.pages > 1 %}
+      <div class="pagination">
+        {% for p in books.iter_pages() %}
+          {% if p %}<a href="{{ url_for('admin.books', page=p) }}" class="page-btn {{ 'active' if p==books.page }}">{{ p }}</a>{% else %}<span>…</span>{% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

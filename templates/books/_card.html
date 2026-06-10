@@ -1,0 +1,43 @@
+<div class="book-card">
+  <a href="{{ url_for('books.detail', book_id=book.id) }}" class="book-cover-link">
+    {% if book.couverture and book.couverture != 'default_cover.jpg' %}
+      {% if book.couverture.startswith('http') %}
+        <img src="{{ book.couverture }}" alt="{{ book.titre }}" class="book-cover-img"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <div class="book-cover-placeholder" style="background:{{ book.couleur }};display:none">
+          <span>{{ book.titre }}</span>
+        </div>
+      {% else %}
+        <img src="{{ url_for('static', filename='uploads/covers/' + book.couverture) }}"
+             alt="{{ book.titre }}" class="book-cover-img"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <div class="book-cover-placeholder" style="background:{{ book.couleur }};display:none">
+          <span>{{ book.titre }}</span>
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="book-cover-placeholder" style="background:{{ book.couleur }}">
+        <span>{{ book.titre }}</span>
+      </div>
+    {% endif %}
+    {% if book.badge %}<span class="book-badge">{{ book.badge }}</span>{% endif %}
+    {% set status = book.stock_status %}
+    {% if status[0] == 'rupture' %}<span class="stock-tag stock-out">Rupture</span>{% endif %}
+  </a>
+  <div class="book-info">
+    <div class="book-category">{{ book.category.icone }} {{ book.category.nom }}</div>
+    <a href="{{ url_for('books.detail', book_id=book.id) }}" class="book-title">{{ book.titre }}</a>
+    <div class="book-author">{{ book.auteur }}</div>
+    <div class="book-footer">
+      <div class="book-price">{{ "%.2f"|format(book.prix|float) }} €</div>
+      {% if book.note_moyenne > 0 %}
+        <div class="book-rating">★ {{ "%.1f"|format(book.note_moyenne) }}</div>
+      {% endif %}
+    </div>
+    <form action="{{ url_for('cart.add', book_id=book.id) }}" method="post">
+      <button type="submit" class="btn-add-cart" {% if not book.en_stock %}disabled{% endif %}>
+        {{ '+ Ajouter' if book.en_stock else 'Épuisé' }}
+      </button>
+    </form>
+  </div>
+</div>

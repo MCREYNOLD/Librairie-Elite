@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Catalogue — Librairie Élite{% endblock %}
+{% block content %}
+<div class="catalogue-layout">
+  <!-- Sidebar filtres -->
+  <aside class="sidebar">
+    <h3>Catégories</h3>
+    <ul class="cat-list">
+      <li><a href="{{ url_for('books.catalogue') }}" class="{{ 'active' if not cat_slug }}">📚 Toutes les catégories</a></li>
+      {% for cat in categories %}
+        <li><a href="{{ url_for('books.catalogue', categorie=cat.slug) }}" class="{{ 'active' if cat_slug == cat.slug }}">{{ cat.icone }} {{ cat.nom }} <span class="cat-count">{{ cat.books.count() }}</span></a></li>
+      {% endfor %}
+    </ul>
+  </aside>
+
+  <!-- Contenu principal -->
+  <div class="catalogue-main">
+    <div class="catalogue-bar">
+      <div class="catalogue-info">
+        {% if q %}<span><strong>« {{ q }} »</strong> — {% endif %}
+        {{ books.total }} livre{{ 's' if books.total != 1 }}
+        {% if q %}</span>{% endif %}
+      </div>
+      <form class="sort-form" method="get" action="{{ url_for('books.catalogue') }}">
+        {% if q %}<input type="hidden" name="q" value="{{ q }}"/>{% endif %}
+        {% if cat_slug %}<input type="hidden" name="categorie" value="{{ cat_slug }}"/>{% endif %}
+        <select name="tri" onchange="this.form.submit()" class="sort-select">
+          <option value="recent" {{ 'selected' if sort=='recent' }}>Plus récents</option>
+          <option value="prix-asc" {{ 'selected' if sort=='prix-asc' }}>Prix croissant</option>
+          <option value="prix-desc" {{ 'selected' if sort=='prix-desc' }}>Prix décroissant</option>
+          <option value="note" {{ 'selected' if sort=='note' }}>Mieux notés</option>
+          <option value="titre" {{ 'selected' if sort=='titre' }}>Titre A–Z</option>
+        </select>
+      </form>
+    </div>
+
+    {% if books.items %}
+      <div class="books-grid">
+        {% for book in books.items %}{% include 'books/_card.html' %}{% endfor %}
+      </div>
+      <!-- Pagination -->
+      {% if books.pages > 1 %}
+      <div class="pagination">
+        {% if books.has_prev %}
+          <a href="{{ url_for('books.catalogue', page=books.prev_num, q=q, categorie=cat_slug, tri=sort) }}" class="page-btn">← Précédent</a>
+        {% endif %}
+        {% for p in books.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+          {% if p %}
+            <a href="{{ url_for('books.catalogue', page=p, q=q, categorie=cat_slug, tri=sort) }}" class="page-btn {{ 'active' if p == books.page }}">{{ p }}</a>
+          {% else %}
+            <span class="page-dots">…</span>
+          {% endif %}
+        {% endfor %}
+        {% if books.has_next %}
+          <a href="{{ url_for('books.catalogue', page=books.next_num, q=q, categorie=cat_slug, tri=sort) }}" class="page-btn">Suivant →</a>
+        {% endif %}
+      </div>
+      {% endif %}
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h3>Aucun livre trouvé</h3>
+        <p>Essayez d'autres mots-clés ou <a href="{{ url_for('books.catalogue') }}">voir tout le catalogue</a>.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

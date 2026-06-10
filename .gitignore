@@ -1,0 +1,8 @@
+venv/
+pycache/
+*.pyc
+.env
+*.sqlite
+static/uploads/covers/*
+instance/
+*.log

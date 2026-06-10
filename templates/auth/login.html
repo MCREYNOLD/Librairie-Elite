@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Connexion — Librairie Élite{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-logo">Librairie<span>Élite</span></div>
+      <h1>Bon retour</h1>
+      <p>Connectez-vous à votre compte</p>
+    </div>
+    <form method="post" class="auth-form">
+      <div class="form-group">
+        <label>Adresse email</label>
+        <input type="email" name="email" required placeholder="vous@exemple.com" autocomplete="email"/>
+      </div>
+      <div class="form-group">
+        <label>Mot de passe <a href="{{ url_for('auth.forgot_password') }}" class="form-link">Oublié ?</a></label>
+        <input type="password" name="password" required placeholder="••••••••" autocomplete="current-password"/>
+      </div>
+      <label class="checkbox-label">
+        <input type="checkbox" name="remember"/> Se souvenir de moi
+      </label>
+      <button type="submit" class="btn-auth">Se connecter</button>
+    </form>
+    <p class="auth-switch">Pas encore de compte ? <a href="{{ url_for('auth.register') }}">S'inscrire</a></p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Dashboard Admin — Librairie Élite{% endblock %}
+{% block content %}
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-brand">⚙️ Admin</div>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin.dashboard') }}" class="admin-nav-link active">📊 Dashboard</a>
+      <a href="{{ url_for('admin.books') }}" class="admin-nav-link">📚 Livres</a>
+      <a href="{{ url_for('admin.categories') }}" class="admin-nav-link">🏷️ Catégories</a>
+      <a href="{{ url_for('admin.users') }}" class="admin-nav-link">👥 Utilisateurs</a>
+      <a href="{{ url_for('admin.orders') }}" class="admin-nav-link">📦 Commandes</a>
+      <a href="{{ url_for('main.index') }}" class="admin-nav-link">← Site</a>
+    </nav>
+  </aside>
+  <div class="admin-main">
+    <h1 class="admin-title">Dashboard</h1>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon">📚</div><div class="stat-val">{{ stats.books }}</div><div class="stat-label">Livres</div></div>
+      <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-val">{{ stats.users }}</div><div class="stat-label">Utilisateurs</div></div>
+      <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-val">{{ stats.orders }}</div><div class="stat-label">Commandes</div></div>
+      <div class="stat-card gold"><div class="stat-icon">💶</div><div class="stat-val">{{ "%.0f"|format(stats.revenue|float) }} €</div><div class="stat-label">Chiffre d'affaires</div></div>
+    </div>
+    <div class="admin-tables-row">
+      <div class="admin-card">
+        <h2>Dernières commandes</h2>
+        <table class="admin-table">
+          <thead><tr><th>Référence</th><th>Client</th><th>Total</th><th>Statut</th></tr></thead>
+          <tbody>
+          {% for order in recent_orders %}
+          <tr>
+            <td><a href="{{ url_for('admin.orders') }}">{{ order.reference }}</a></td>
+            <td>{{ order.user.full_name }}</td>
+            <td>{{ "%.2f"|format(order.total|float) }} €</td>
+            <td><span class="status-badge status-{{ order.statut }}">{{ order.statut|replace('_',' ')|title }}</span></td>
+          </tr>
+          {% else %}<tr><td colspan="4" class="td-empty">Aucune commande</td></tr>{% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="admin-card">
+        <h2>⚠️ Stock faible</h2>
+        <table class="admin-table">
+          <thead><tr><th>Livre</th><th>Stock</th></tr></thead>
+          <tbody>
+          {% for book in low_stock %}
+          <tr>
+            <td>{{ book.titre }}</td>
+            <td><span class="stock-tag {{ 'stock-out' if book.stock == 0 else 'stock-low' }}">{{ book.stock }}</span></td>
+          </tr>
+          {% else %}<tr><td colspan="2" class="td-empty">Tout est bien approvisionné ✓</td></tr>{% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Mon panier — Librairie Élite{% endblock %}
+{% block content %}
+<div class="page-container">
+  <h1 class="page-title">Mon panier</h1>
+  {% if items %}
+  <div class="cart-layout">
+    <div class="cart-items-col">
+      {% for item in items %}
+      <div class="cart-item">
+        {% if item.book.couverture and item.book.couverture != 'default_cover.jpg' %}
+          <img src="{{ url_for('static', filename='uploads/covers/' + item.book.couverture) }}" alt="{{ item.book.titre }}" class="cart-item-cover-img"/>
+        {% else %}
+          <div class="cart-item-cover" style="background:{{ item.book.couleur }}">{{ item.book.titre[:12] }}</div>
+        {% endif %}
+        <div class="cart-item-info">
+          <a href="{{ url_for('books.detail', book_id=item.book.id) }}" class="cart-item-title">{{ item.book.titre }}</a>
+          <div class="cart-item-author">{{ item.book.auteur }}</div>
+          <div class="cart-item-price-u">{{ "%.2f"|format(item.book.prix|float) }} € / unité</div>
+          <form action="{{ url_for('cart.update', book_id=item.book.id) }}" method="post" class="qty-form">
+            <button type="submit" name="qty" value="{{ item.qty - 1 }}" class="qty-btn">−</button>
+            <span class="qty-val">{{ item.qty }}</span>
+            <button type="submit" name="qty" value="{{ item.qty + 1 }}" class="qty-btn">+</button>
+          </form>
+        </div>
+        <div class="cart-item-right">
+          <div class="cart-item-total">{{ "%.2f"|format(item.sous_total) }} €</div>
+          <a href="{{ url_for('cart.remove', book_id=item.book.id) }}" class="remove-btn">🗑</a>
+        </div>
+      </div>
+      {% endfor %}
+      <div class="cart-actions">
+        <a href="{{ url_for('cart.clear') }}" class="btn-secondary-sm">Vider le panier</a>
+        <a href="{{ url_for('books.catalogue') }}" class="btn-secondary-sm">← Continuer mes achats</a>
+      </div>
+    </div>
+
+    <div class="cart-summary-card">
+      <h2>Récapitulatif</h2>
+      <div class="summary-row"><span>Sous-total</span><span>{{ "%.2f"|format(subtotal) }} €</span></div>
+      <div class="summary-row"><span>Livraison</span><span class="free">Gratuite</span></div>
+      <div class="summary-row"><span>TVA (20%)</span><span>{{ "%.2f"|format(subtotal * 0.2) }} €</span></div>
+      <div class="summary-row total"><span>Total TTC</span><span>{{ "%.2f"|format(subtotal * 1.2) }} €</span></div>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('orders.checkout') }}" class="btn-checkout">Passer commande →</a>
+      {% else %}
+        <a href="{{ url_for('auth.login', next=url_for('orders.checkout')) }}" class="btn-checkout">Se connecter pour commander</a>
+      {% endif %}
+    </div>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">🛒</div>
+    <h3>Votre panier est vide</h3>
+    <p>Explorez notre catalogue pour trouver vos prochaines lectures.</p>
+    <a href="{{ url_for('books.catalogue') }}" class="btn-primary">Voir le catalogue</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

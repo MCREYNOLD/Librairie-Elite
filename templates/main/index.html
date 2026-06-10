@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Accueil — Librairie Élite{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-content">
+    <p class="hero-eyebrow">✦ Votre librairie en ligne</p>
+    <h1>Des livres pour chaque<br/><em>passion</em>, chaque instant.</h1>
+    <p class="hero-sub">Des milliers de titres soigneusement sélectionnés, livrés chez vous en 24h.</p>
+    <form class="hero-search" action="{{ url_for('books.catalogue') }}" method="get">
+      <input type="text" name="q" placeholder="Que voulez-vous lire aujourd'hui ?"/>
+      <button type="submit">Rechercher</button>
+    </form>
+    <div class="hero-cats">
+      {% for cat in categories %}
+        <a href="{{ url_for('books.catalogue', categorie=cat.slug) }}" class="hero-cat-tag">{{ cat.icone }} {{ cat.nom }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% if nouveautes %}
+<section class="section">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2 class="section-title">Nouveautés</h2>
+      <a href="{{ url_for('books.catalogue', tri='recent') }}" class="see-all">Voir tout →</a>
+    </div>
+    <div class="books-grid">
+      {% for book in nouveautes %}{% include 'books/_card.html' %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% if bestsellers %}
+<section class="section section-alt">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2 class="section-title">Les mieux notés</h2>
+      <a href="{{ url_for('books.catalogue', tri='note') }}" class="see-all">Voir tout →</a>
+    </div>
+    <div class="books-grid">
+      {% for book in bestsellers %}{% include 'books/_card.html' %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% if not current_user.is_authenticated %}
+<section class="cta-band">
+  <div class="cta-band-inner">
+    <h2>Créez votre compte gratuitement</h2>
+    <p>Sauvegardez vos favoris, suivez vos commandes et profitez d'offres exclusives.</p>
+    <a href="{{ url_for('auth.register') }}" class="btn-primary">Créer mon compte</a>
+  </div>
+</section>
+{% endif %}
+{% endblock %}
