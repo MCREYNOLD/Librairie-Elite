@@ -17,7 +17,6 @@ idna==3.18
 itsdangerous==2.2.0
 Jinja2==3.1.6
 MarkupSafe==3.0.3
-mod_wsgi==6.0.2
 packaging==26.2
 pillow==12.2.0
 psycopg2-binary==2.9.12
