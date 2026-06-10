@@ -2,7 +2,7 @@ from flask import Blueprint, render_template
 from ..models import Book, Category
 from sqlalchemy import true
 
-main_bp = Blueprint('main', name)
+main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/')
 def index():
