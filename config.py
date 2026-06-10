@@ -10,11 +10,12 @@ class Config:
     DB_NAME     = os.environ.get('DB_NAME', 'librairie_db')
     DB_USER     = os.environ.get('DB_USER', 'root')
     DB_PASSWORD = os.environ.get('DB_PASSWORD', '')
-    SQLALCHEMY_DATABASE_URI = (
-        f"mysql+pymysql://{os.environ.get('DB_USER','root')}:{os.environ.get('DB_PASSWORD','')}@"
-        f"{os.environ.get('DB_HOST','localhost')}:{os.environ.get('DB_PORT','3306')}/"
-        f"{os.environ.get('DB_NAME','librairie_db')}?charset=utf8mb4"
-    )
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+    'DATABASE_URL',
+    f"mysql+pymysql://{os.environ.get('DB_USER','root')}:{os.environ.get('DB_PASSWORD','')}@"
+    f"{os.environ.get('DB_HOST','127.0.0.1')}:{os.environ.get('DB_PORT','3306')}/"
+    f"{os.environ.get('DB_NAME','librairie_db')}?charset=utf8mb4"
+)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {'pool_recycle': 300, 'pool_pre_ping': True}
     MAIL_SERVER   = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
